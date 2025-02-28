@@ -60,7 +60,7 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>com.client.pop3imap4client/com.client.pop3imap4client.HelloApplication
+                            <mainClass>com.client.pop3imap4client/com.client.pop3imap4client.EmailClient
                             </mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="437.0" prefWidth="630.0" style="-fx-background-color: darkgray;" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.client.pop3imap4client.ServerChoiceController">
+      <BorderPane prefHeight="86.0" prefWidth="630.0" style="-fx-background-color: black;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+         <center>
+            <Label alignment="CENTER" prefHeight="72.0" prefWidth="478.0" style="-fx-text-fill: white;" text="EMAIL CLIENT" textFill="WHITE" BorderPane.alignment="CENTER">
+               <font>
+                  <Font size="36.0" />
+               </font>
+            </Label>
+         </center>
+         <top>
+            <Button fx:id="exitButton" mnemonicParsing="false" style="-fx-background-color: white; -fx-font-weight: bold;" text="EXIT" BorderPane.alignment="TOP_RIGHT" />
+         </top>
+      </BorderPane>
+      <HBox alignment="CENTER" layoutX="152.8" layoutY="87.2" prefHeight="30.0" prefWidth="300.0" AnchorPane.leftAnchor="153.0" AnchorPane.rightAnchor="181.0" AnchorPane.topAnchor="87.0">
+            <Label prefHeight="27.0" prefWidth="156.0" style="-fx-text-fill: black; -fx-font-weight: bold; -fx-font-size: 16;" text="Selected Protocol: ">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <Label fx:id="selectedProtocol" prefHeight="27.0" prefWidth="123.0" style="-fx-text-fill: black; -fx-font-weight: bold; -fx-font-size: 16;" text="titleholder">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+      </HBox>
+      <HBox alignment="CENTER" layoutX="14.0" layoutY="132.0" prefHeight="184.0" prefWidth="603.0">
+            <Button fx:id="gmailButton" mnemonicParsing="false" prefHeight="160.0" prefWidth="150.0" style="-fx-background-color: darkGray;">
+               <HBox.margin>
+                  <Insets right="20.0" />
+               </HBox.margin>
+               <graphic>
+                  <ImageView fitHeight="150.0" fitWidth="111.0" pickOnBounds="true" preserveRatio="true">
+                        <Image url="@../../../images/Gmail_icon.png" />
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Button fx:id="outlookButton" mnemonicParsing="false" prefHeight="160.0" prefWidth="150.0" style="-fx-background-color: darkGray;">
+               <HBox.margin>
+                  <Insets right="20.0" />
+               </HBox.margin>
+               <graphic>
+                  <ImageView fitHeight="150.0" fitWidth="108.0" pickOnBounds="true" preserveRatio="true">
+                        <Image url="@../../../images/outlook.png" />
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Button fx:id="yahooButton" mnemonicParsing="false" prefHeight="160.0" prefWidth="150.0" style="-fx-background-color: darkGray;">
+               <HBox.margin>
+                  <Insets right="20.0" />
+               </HBox.margin>
+               <graphic>
+                  <ImageView fitHeight="150.0" fitWidth="125.0" pickOnBounds="true" preserveRatio="true">
+                        <Image url="@../../../images/yahoo.png" />
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Button fx:id="otherButton" mnemonicParsing="false" prefHeight="160.0" prefWidth="150.0" style="-fx-background-color: darkGray;">
+               <graphic>
+                  <ImageView fitHeight="150.0" fitWidth="124.0" pickOnBounds="true" preserveRatio="true">
+                        <Image url="@../../../images/other.png" />
+                  </ImageView>
+               </graphic>
+            </Button>
+      </HBox>
+      <HBox alignment="TOP_CENTER" layoutX="14.0" layoutY="316.0" prefHeight="42.0" prefWidth="603.0">
+            <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="30.0" prefWidth="150.0" style="-fx-text-fill: black; -fx-font-weight: bold;" text="GMAIL">
+               <HBox.margin>
+                  <Insets right="20.0" />
+               </HBox.margin>
+            </Label>
+            <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="30.0" prefWidth="150.0" style="-fx-text-fill: black; -fx-font-weight: bold;" text="OUTLOOK">
+               <HBox.margin>
+                  <Insets right="20.0" />
+               </HBox.margin>
+            </Label>
+            <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="30.0" prefWidth="150.0" style="-fx-text-fill: black; -fx-font-weight: bold;" text="YAHOO">
+               <HBox.margin>
+                  <Insets right="20.0" />
+               </HBox.margin>
+            </Label>
+            <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="30.0" prefWidth="150.0" style="-fx-text-fill: black; -fx-font-weight: bold;" text="OTHER" />
+      </HBox>
+      <TextField fx:id="otherProviderText" editable="false" layoutX="217.0" layoutY="358.0" prefHeight="42.0" prefWidth="195.0" promptText="ENTER OTHER" style="-fx-background-color: white;" visible="false" />
+</AnchorPane>
