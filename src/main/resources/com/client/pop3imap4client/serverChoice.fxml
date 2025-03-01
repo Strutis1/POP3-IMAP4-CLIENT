@@ -20,9 +20,15 @@
                </font>
             </Label>
          </center>
-         <top>
-            <Button fx:id="exitButton" mnemonicParsing="false" style="-fx-background-color: white; -fx-font-weight: bold;" text="EXIT" BorderPane.alignment="TOP_RIGHT" />
-         </top>
+      <top>
+         <HBox alignment="CENTER" prefHeight="30.0" prefWidth="678.0" BorderPane.alignment="CENTER">
+            <children>
+               <Button fx:id="backButton" mnemonicParsing="false" style="-fx-background-color: white; -fx-font-weight: bold;" text="BACK" />
+               <Button disable="true" mnemonicParsing="false" prefHeight="30.0" prefWidth="521.0" text="Button" visible="false" />
+               <Button fx:id="exitButton" mnemonicParsing="false" style="-fx-background-color: white; -fx-font-weight: bold;" text="EXIT" />
+            </children>
+         </HBox>
+      </top>
       </BorderPane>
       <HBox alignment="CENTER" layoutX="152.8" layoutY="87.2" prefHeight="30.0" prefWidth="300.0" AnchorPane.leftAnchor="153.0" AnchorPane.rightAnchor="181.0" AnchorPane.topAnchor="87.0">
             <Label prefHeight="27.0" prefWidth="156.0" style="-fx-text-fill: black; -fx-font-weight: bold; -fx-font-size: 16;" text="Selected Protocol: ">

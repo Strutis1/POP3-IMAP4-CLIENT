@@ -22,6 +22,9 @@ public class ServerChoiceController {
     private Button otherButton;
 
     @FXML
+    private Button backButton;
+
+    @FXML
     private TextField otherProviderText;
 
     @FXML
@@ -40,6 +43,7 @@ public class ServerChoiceController {
     public void initialize(){
         selectedProtocol.setText(DataHolder.getInstance().getSelectedProtocol());
         exitButton.setOnAction(event -> System.exit(0));
+        backButton.setOnAction(this::handleBack);
         gmailButton.setOnAction(this::handleServerChoice);
         outlookButton.setOnAction(this::handleServerChoice);
         yahooButton.setOnAction(this::handleServerChoice);
@@ -47,6 +51,19 @@ public class ServerChoiceController {
         otherProviderText.setOnAction(this::handleOtherProvider);
     }
 
+    private void handleBack(ActionEvent actionEvent) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("startScreen.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 
     private void handleOtherProvider(ActionEvent actionEvent) {

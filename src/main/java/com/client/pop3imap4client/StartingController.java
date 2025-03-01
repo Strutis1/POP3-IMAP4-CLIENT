@@ -29,14 +29,20 @@ public class StartingController {
 
     public void initialize(){
         exitButton.setOnAction(event -> System.exit(0));
-        imapButton.setOnAction(this::handleIMAPConnection);
-        popButton.setOnAction(this::handlePOPConnection);
+        imapButton.setOnAction(this::handleProtocol);
+        popButton.setOnAction(this::handleProtocol);
     }
 
 
 
-    private void handlePOPConnection(ActionEvent actionEvent) {
-        DataHolder.getInstance().setSelectedProtocol("POP3");
+    private void handleProtocol(ActionEvent actionEvent) {
+        Object source = actionEvent.getSource();
+        if(source == popButton) {
+            DataHolder.getInstance().setSelectedProtocol("POP3");
+        }
+        else if(source == imapButton) {
+            DataHolder.getInstance().setSelectedProtocol("IMAP4");
+        }
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("serverChoice.fxml"));
             Parent root = loader.load();
@@ -49,21 +55,6 @@ public class StartingController {
             throw new RuntimeException(e);
         }
 
-    }
-
-    private void handleIMAPConnection(ActionEvent actionEvent) {
-        DataHolder.getInstance().setSelectedProtocol("IMAP4");
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("serverChoice.fxml"));
-            Parent root = loader.load();
-
-            Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 }

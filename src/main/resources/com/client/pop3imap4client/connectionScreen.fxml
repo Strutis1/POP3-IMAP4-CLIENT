@@ -19,9 +19,15 @@
                </font>
             </Label>
          </center>
-         <top>
-            <Button fx:id="exitButton" mnemonicParsing="false" style="-fx-background-color: white; -fx-font-weight: bold;" text="EXIT" BorderPane.alignment="TOP_RIGHT" />
-         </top>
+      <top>
+         <HBox alignment="CENTER" prefHeight="30.0" prefWidth="710.0" BorderPane.alignment="CENTER">
+            <children>
+               <Button fx:id="backButton" mnemonicParsing="false" style="-fx-background-color: white; -fx-font-weight: bold;" text="BACK" />
+               <Button disable="true" mnemonicParsing="false" prefHeight="30.0" prefWidth="521.0" text="Button" visible="false" />
+               <Button fx:id="exitButton" mnemonicParsing="false" style="-fx-background-color: white; -fx-font-weight: bold;" text="EXIT" />
+            </children>
+         </HBox>
+      </top>
       </BorderPane>
       <HBox layoutX="99.0" layoutY="161.0" prefHeight="194.0" prefWidth="350.0" AnchorPane.leftAnchor="99.0" AnchorPane.rightAnchor="99.0" AnchorPane.topAnchor="161.0">
             <VBox prefHeight="194.0" prefWidth="70.0">
@@ -36,7 +42,7 @@
                      </VBox.margin>
                   </Label>
             </VBox>
-            <VBox prefHeight="194.0" prefWidth="280.0">
+            <VBox alignment="TOP_CENTER" prefHeight="194.0" prefWidth="280.0">
                   <TextField fx:id="emailText" prefHeight="30.0" style="-fx-background-color: white;">
                      <VBox.margin>
                         <Insets bottom="20.0" />
@@ -48,8 +54,13 @@
                      </VBox.margin>
                   </TextField>
                   <Label fx:id="errorText" prefHeight="32.0" prefWidth="280.0" style="-fx-text-fill: red; -fx-font-weight: bold;" text="Error" visible="false" />
+         <Button fx:id="connectButton" alignment="CENTER" contentDisplay="CENTER" maxWidth="100.0" mnemonicParsing="false" prefHeight="40.0" style="-fx-background-color: black; -fx-text-fill: white; -fx-font-weight: bold;" text="Connect">
+            <VBox.margin>
+               <Insets top="20.0" />
+            </VBox.margin>
+         </Button>
             </VBox>
-            <Button fx:id="seePasswordButton" minWidth="39.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="39.0" style="-fx-background-color: darkGray;" text="👁">
+            <Button fx:id="seePasswordButton" minWidth="39.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="39.0" style="-fx-background-color: black; -fx-text-fill: white;" text="👁">
                <HBox.margin>
                   <Insets top="50.0" />
                </HBox.margin>
