@@ -10,19 +10,20 @@ public class POP3Client extends EmailClient {
     }
 
     @Override
-    public boolean authenticate(String email, String accessCode) {
+    public boolean authenticate(String email, String appPassword) {
         try {
-            String authString = "user=" + email + "\u0001auth=Bearer " + accessCode + "\u0001\u0001";
-            String base64Auth = Base64.getEncoder().encodeToString(authString.getBytes());
-
-            String response = sendCommand(POPCommands.AUTH + " XOAUTH2 " + base64Auth);
-
-            return response.startsWith("+OK");
+            String responseUser = sendCommand(POPCommands.USER + " " + email);
+            if (!responseUser.startsWith("+OK")) {
+                return false;
+            }
+            String responsePass = sendCommand(POPCommands.PASS + " " + appPassword);
+            return responsePass.startsWith("+OK");
         } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
     }
+
 
 
 }

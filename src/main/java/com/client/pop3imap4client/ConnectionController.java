@@ -36,7 +36,7 @@ public class ConnectionController {
     private Button connectButton;
 
     @FXML
-    private PasswordField accessCode;
+    private PasswordField appPassword;
 
     @FXML
     private TextField visiblePasswordText;
@@ -67,7 +67,7 @@ public class ConnectionController {
         visiblePasswordText.setManaged(false);
         visiblePasswordText.setVisible(false);
 
-        visiblePasswordText.textProperty().bindBidirectional(accessCode.textProperty());
+        visiblePasswordText.textProperty().bindBidirectional(appPassword.textProperty());
 
         seePasswordButton.setOnAction(this::togglePasswordVisibility);
 
@@ -81,15 +81,15 @@ public class ConnectionController {
         isPasswordVisible = !isPasswordVisible;
 
         if (isPasswordVisible) {
-            visiblePasswordText.setText(accessCode.getText());
+            visiblePasswordText.setText(appPassword.getText());
             visiblePasswordText.setVisible(true);
             visiblePasswordText.setManaged(true);
-            accessCode.setVisible(false);
-            accessCode.setManaged(false);
+            appPassword.setVisible(false);
+            appPassword.setManaged(false);
         } else {
-            accessCode.setText(visiblePasswordText.getText());
-            accessCode.setVisible(true);
-            accessCode.setManaged(true);
+            appPassword.setText(visiblePasswordText.getText());
+            appPassword.setVisible(true);
+            appPassword.setManaged(true);
             visiblePasswordText.setVisible(false);
             visiblePasswordText.setManaged(false);
         }
@@ -99,7 +99,7 @@ public class ConnectionController {
     private void checkCredentials(ActionEvent actionEvent) {
         if(emailText.getText().contains("@") && emailText.getText().split("@")[1].contains(".")){
             errorText.setVisible(false);
-            if(chosenClient.authenticate(emailText.getText(), accessCode.getText()))
+            if(chosenClient.authenticate(emailText.getText(), appPassword.getText()))
                 System.out.println("Credentials accepted");
             else{
                 errorText.setText("Incorrect email or password");
