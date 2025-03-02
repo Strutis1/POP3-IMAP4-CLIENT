@@ -48,7 +48,7 @@ public abstract class EmailClient {
             StringBuilder fullResponse = new StringBuilder();
             while ((response = reader.readLine()) != null) {
                 fullResponse.append(response).append("\n");
-                if (response.startsWith("+OK") || response.startsWith("*") || response.startsWith("A")) break; // Stop reading for known responses
+                if (response.startsWith("+OK") || response.startsWith("-ERR") || response.startsWith("+ ")) break; // Stop reading for known responses
             }
             return fullResponse.toString();
         } catch (IOException e) {

@@ -36,7 +36,7 @@ public class ConnectionController {
     private Button connectButton;
 
     @FXML
-    private PasswordField passwordText;
+    private PasswordField accessCode;
 
     @FXML
     private TextField visiblePasswordText;
@@ -67,7 +67,7 @@ public class ConnectionController {
         visiblePasswordText.setManaged(false);
         visiblePasswordText.setVisible(false);
 
-        visiblePasswordText.textProperty().bindBidirectional(passwordText.textProperty());
+        visiblePasswordText.textProperty().bindBidirectional(accessCode.textProperty());
 
         seePasswordButton.setOnAction(this::togglePasswordVisibility);
 
@@ -81,15 +81,15 @@ public class ConnectionController {
         isPasswordVisible = !isPasswordVisible;
 
         if (isPasswordVisible) {
-            visiblePasswordText.setText(passwordText.getText());
+            visiblePasswordText.setText(accessCode.getText());
             visiblePasswordText.setVisible(true);
             visiblePasswordText.setManaged(true);
-            passwordText.setVisible(false);
-            passwordText.setManaged(false);
+            accessCode.setVisible(false);
+            accessCode.setManaged(false);
         } else {
-            passwordText.setText(visiblePasswordText.getText());
-            passwordText.setVisible(true);
-            passwordText.setManaged(true);
+            accessCode.setText(visiblePasswordText.getText());
+            accessCode.setVisible(true);
+            accessCode.setManaged(true);
             visiblePasswordText.setVisible(false);
             visiblePasswordText.setManaged(false);
         }
@@ -99,7 +99,7 @@ public class ConnectionController {
     private void checkCredentials(ActionEvent actionEvent) {
         if(emailText.getText().contains("@") && emailText.getText().split("@")[1].contains(".")){
             errorText.setVisible(false);
-            if(chosenClient.authenticate(emailText.getText(), passwordText.getText()))
+            if(chosenClient.authenticate(emailText.getText(), accessCode.getText()))
                 System.out.println("Credentials accepted");
             else{
                 errorText.setText("Incorrect email or password");
