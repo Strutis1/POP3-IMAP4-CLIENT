@@ -5,4 +5,6 @@ module com.client.pop3imap4client {
 
     opens com.client.pop3imap4client to javafx.fxml;
     exports com.client.pop3imap4client;
+    exports data;
+    opens data to javafx.fxml;
 }

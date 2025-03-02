@@ -1,10 +1,13 @@
-package com.client.pop3imap4client;
+package data;
 
 public class DataHolder {
 
     private String selectedProvider;
     private String selectedProtocol;
+    private String hostName;
+    private int securePort;
     private static final DataHolder INSTANCE = new DataHolder();
+
 
     private DataHolder() {}
 
@@ -26,6 +29,22 @@ public class DataHolder {
 
     public void setSelectedProvider(String selectedProvider) {
         this.selectedProvider = selectedProvider;
+    }
+
+    public String getHostName() {
+        return hostName;
+    }
+
+    public void setHostName(String hostName) {
+        this.hostName = hostName;
+    }
+
+    public int getSecurePort() {
+        return securePort;
+    }
+
+    public void setSecurePort(int securePort) {
+        this.securePort = securePort;
     }
 
 }
