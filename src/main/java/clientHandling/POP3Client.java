@@ -1,8 +1,10 @@
 package clientHandling;
 
-import java.util.Base64;
+import data.Email;
 
-public class POP3Client extends EmailClient {
+import java.util.List;
+
+public class POP3Client extends FatherEmail {
 
     public POP3Client(String host, int port) {
         super(host, port);
@@ -24,6 +26,20 @@ public class POP3Client extends EmailClient {
         }
     }
 
+    @Override
+    public String retrieveEmail(int id) {
+        return "";
+    }
+
+    @Override
+    public void deleteEmail(int id) {
+
+    }
+
+    @Override
+    public List<Email> fetchEmails() {
+        return List.of();
+    }
 
 
 }

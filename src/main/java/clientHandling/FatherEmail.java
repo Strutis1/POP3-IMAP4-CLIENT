@@ -1,17 +1,20 @@
 package clientHandling;
 
+import data.Email;
+
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import java.io.*;
+import java.util.List;
 
-public abstract class EmailClient {
+public abstract class FatherEmail {
     protected String host;
     protected int port;
     protected SSLSocket sslSocket;
     protected BufferedReader reader;
     protected BufferedWriter writer;
 
-    public EmailClient(String host, int port) {
+    public FatherEmail(String host, int port) {
         this.host = host;
         this.port = port;
     }
@@ -66,4 +69,10 @@ public abstract class EmailClient {
             System.err.println("Error closing connection: " + e.getMessage());
         }
     }
+
+    public abstract String retrieveEmail(int id);
+
+    public abstract void deleteEmail(int id);
+
+    public abstract List<Email> fetchEmails();
 }

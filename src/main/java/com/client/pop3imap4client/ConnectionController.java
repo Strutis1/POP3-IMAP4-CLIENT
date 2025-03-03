@@ -1,6 +1,6 @@
 package com.client.pop3imap4client;
 
-import clientHandling.EmailClient;
+import clientHandling.FatherEmail;
 import clientHandling.IMAPClient;
 import data.DataHolder;
 import javafx.event.ActionEvent;
@@ -53,7 +53,7 @@ public class ConnectionController {
 
     private boolean isPasswordVisible = false;
 
-    private EmailClient chosenClient;
+    private FatherEmail chosenClient;
 
 
 
@@ -99,8 +99,11 @@ public class ConnectionController {
     private void checkCredentials(ActionEvent actionEvent) {
         if(emailText.getText().contains("@") && emailText.getText().split("@")[1].contains(".")){
             errorText.setVisible(false);
-            if(chosenClient.authenticate(emailText.getText(), appPassword.getText()))
+            if(chosenClient.authenticate(emailText.getText(), appPassword.getText())) {
                 System.out.println("Credentials accepted");
+                connectClient(actionEvent);
+            }
+
             else{
                 errorText.setText("Incorrect email or password");
                 errorText.setVisible(true);
@@ -109,6 +112,23 @@ public class ConnectionController {
         else{
             errorText.setText("Invalid email address or password");
             errorText.setVisible(true);
+        }
+    }
+
+    private void connectClient(ActionEvent actionEvent) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("mainEmailScreen.fxml"));
+            Parent root = loader.load();
+
+            MainEmailController controller = loader.getController();
+            controller.initialize(chosenClient);
+
+            Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
