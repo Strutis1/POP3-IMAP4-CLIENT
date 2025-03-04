@@ -1,6 +1,7 @@
 package clientHandling;
 
 import data.Email;
+import javafx.collections.ObservableList;
 
 import java.util.List;
 
@@ -28,7 +29,11 @@ public class IMAPClient extends FatherEmail {
     }
 
     @Override
-    public List<Email> fetchEmails() {
-        return List.of();
+    public void fetchEmails(ObservableList<Email> emailList) {
+    }
+
+    @Override
+    public void logOut() {
+
     }
 }

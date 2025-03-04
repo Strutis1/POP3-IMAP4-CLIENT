@@ -1,6 +1,7 @@
 package clientHandling;
 
 import data.Email;
+import javafx.collections.ObservableList;
 
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
@@ -62,6 +63,7 @@ public abstract class FatherEmail {
     public void close() {
         try {
             System.out.println("Closing connection to " + host + ":" + port);
+            writer.write("RSET\r\n");
             if (sslSocket != null) sslSocket.close();
             if (reader != null) reader.close();
             if (writer != null) writer.close();
@@ -74,5 +76,7 @@ public abstract class FatherEmail {
 
     public abstract void deleteEmail(int id);
 
-    public abstract List<Email> fetchEmails();
+    public abstract void fetchEmails(ObservableList<Email> emailList);
+
+    public abstract void logOut();
 }

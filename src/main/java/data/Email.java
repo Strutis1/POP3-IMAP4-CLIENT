@@ -4,13 +4,17 @@ import javafx.beans.property.*;
 
 public class Email {
     private final IntegerProperty id;
+    private final StringProperty company;
     private final StringProperty sender;
+    private final StringProperty type;
     private final StringProperty subject;
     private final StringProperty size;
 
-    public Email(int id, String sender, String subject, String size) {
+    public Email(int id,String company, String sender, String type, String subject, String size) {
         this.id = new SimpleIntegerProperty(id);
+        this.company = new SimpleStringProperty(company);
         this.sender = new SimpleStringProperty(sender);
+        this.type = new SimpleStringProperty(type);
         this.subject = new SimpleStringProperty(subject);
         this.size = new SimpleStringProperty(size);
     }
@@ -19,9 +23,15 @@ public class Email {
         return id.get();
     }
 
+    public String getCompany() {
+        return company.get();
+    }
+
     public String getSender() {
         return sender.get();
     }
+
+    public String getType() {return type.get(); }
 
     public String getSubject() {
         return subject.get();
@@ -35,9 +45,15 @@ public class Email {
         return id;
     }
 
+    public StringProperty companyProperty() {
+        return company;
+    }
+
     public StringProperty senderProperty() {
         return sender;
     }
+
+    public StringProperty typeProperty() {return type; }
 
     public StringProperty subjectProperty() {
         return subject;

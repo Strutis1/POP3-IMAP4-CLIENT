@@ -32,9 +32,9 @@
             </HBox>
         </top>
     </BorderPane>
-   <VBox layoutY="86.0" prefHeight="685.0" prefWidth="280.0" AnchorPane.bottomAnchor="50.0" AnchorPane.topAnchor="86.4">
+   <VBox layoutY="87.2" prefHeight="663.0" prefWidth="140.0" AnchorPane.bottomAnchor="50.0" AnchorPane.topAnchor="87.0">
       <children>
-         <ListView fx:id="folderList" prefHeight="600.0" prefWidth="280.0" style="-fx-background-color: gray;" />
+         <ListView fx:id="folderList" prefHeight="600.0" prefWidth="140.0" style="-fx-background-color: gray;" />
          <Button fx:id="refreshButton" mnemonicParsing="false" prefHeight="50.0" prefWidth="280.0" style="-fx-background-color: gray; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 20;" text="REFRESH">
             <VBox.margin>
                <Insets top="15.0" />
@@ -54,15 +54,15 @@
                      <Font size="36.0" />
                   </font>
                </Label>
-               <Label fx:id="previewEmailSender" prefHeight="30.0" prefWidth="123.0" style="-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12;" text="titleholder">
+               <Label fx:id="previewEmailSender" prefHeight="30.0" prefWidth="203.0" style="-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12;">
                   <font>
                      <Font size="18.0" />
                   </font>
                </Label>
             </children>
          </HBox>
-         <TextArea fx:id="selectedEmailPreview" prefHeight="570.0" prefWidth="280.0" wrapText="true" />
-         <Button fx:id="deleteButton" mnemonicParsing="false" prefHeight="50.0" prefWidth="280.0" style="-fx-background-color: gray; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 20;" text="DELETE">
+         <TextArea fx:id="selectedEmailPreview" editable="false" prefHeight="570.0" prefWidth="280.0" wrapText="true" />
+         <Button fx:id="deleteButton" disable="true" mnemonicParsing="false" prefHeight="50.0" prefWidth="280.0" style="-fx-background-color: gray; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 20;" text="DELETE">
             <font>
                <Font name="Constantia" size="12.0" />
             </font>
@@ -102,12 +102,17 @@
           </HBox>
       </right>
    </BorderPane>
-   <TableView fx:id="emailTable" layoutX="280.0" layoutY="83.0" prefHeight="665.0" prefWidth="640.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="280.0" AnchorPane.rightAnchor="280.0" AnchorPane.topAnchor="86.0">
+   <TableView fx:id="emailTable" layoutX="139.2" layoutY="87.2" prefHeight="663.0" prefWidth="781.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="140.0" AnchorPane.rightAnchor="280.0" AnchorPane.topAnchor="87.0">
      <columns>
-       <TableColumn fx:id="idColumn" prefWidth="75.0" text="ID" />
-       <TableColumn fx:id="senderColumn" prefWidth="75.0" text="Sender" />
-         <TableColumn fx:id="sizeColumn" prefWidth="75.0" text="Subject" />
-         <TableColumn fx:id="subjectColumn" prefWidth="75.0" text="Size" />
+       <TableColumn fx:id="idColumn" prefWidth="58.4000244140625" text="ID" />
+         <TableColumn fx:id="companyColumn" prefWidth="93.60000610351562" text="Company/Alias" />
+       <TableColumn fx:id="senderColumn" prefWidth="153.60003662109375" text="Sender" />
+         <TableColumn fx:id="typeColumn" prefWidth="104.79998779296875" text="Type" />
+         <TableColumn fx:id="subjectColumn" prefWidth="284.79998779296875" text="Subject" />
+         <TableColumn fx:id="sizeColumn" minWidth="0.0" prefWidth="70.933349609375" text="Size" />
      </columns>
+      <columnResizePolicy>
+         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+      </columnResizePolicy>
    </TableView>
 </AnchorPane>

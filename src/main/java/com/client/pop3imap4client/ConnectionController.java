@@ -55,6 +55,8 @@ public class ConnectionController {
 
     private FatherEmail chosenClient;
 
+    private String currentHost = null;
+
 
 
     public void initialize(){
@@ -71,9 +73,20 @@ public class ConnectionController {
 
         seePasswordButton.setOnAction(this::togglePasswordVisibility);
 
-        chosenClient = (selectedProtocol.getText().equals("POP3"))
-                ? new POP3Client(DataHolder.getInstance().getHostName(), DataHolder.getInstance().getSecurePort())
-                : new IMAPClient(DataHolder.getInstance().getHostName(), DataHolder.getInstance().getSecurePort());
+        String newHost = DataHolder.getInstance().getHostName();
+
+        if (chosenClient != null && currentHost != null && currentHost.equals(newHost)) {
+            System.out.println("Reusing existing connection to " + currentHost);
+        } else {
+            if (chosenClient != null) {
+                chosenClient.close();  // Close the previous connection if switching provider
+            }
+            chosenClient = (selectedProtocol.getText().equals("POP3"))
+                    ? new POP3Client(newHost, DataHolder.getInstance().getSecurePort())
+                    : new IMAPClient(newHost, DataHolder.getInstance().getSecurePort());
+
+            currentHost = newHost;  // Update stored host
+        }
 
     }
 
@@ -126,6 +139,9 @@ public class ConnectionController {
             Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
 
             stage.setScene(new Scene(root));
+
+            stage.centerOnScreen();
+
             stage.show();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -134,7 +150,7 @@ public class ConnectionController {
 
     private void handleBack(ActionEvent actionEvent) {
         try {
-            chosenClient.close();
+            chosenClient.logOut();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("serverChoice.fxml"));
             Parent root = loader.load();
 

@@ -8,6 +8,9 @@ import javafx.stage.StageStyle;
 
 import java.io.IOException;
 
+//TODO inform what gmail is disconnecting
+//TODO fix tableview insufficient viewing problem
+
 public class EmailClient extends Application {
     @Override
     public void start(Stage stage) throws IOException {
@@ -16,7 +19,6 @@ public class EmailClient extends Application {
         stage.setTitle("Email Client");
         stage.setScene(scene);
         stage.initStyle(StageStyle.UNDECORATED);
-        stage.centerOnScreen();
         stage.show();
     }
 

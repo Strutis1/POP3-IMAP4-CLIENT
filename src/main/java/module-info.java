@@ -1,6 +1,7 @@
 module com.client.pop3imap4client {
     requires javafx.controls;
     requires javafx.fxml;
+    requires jakarta.mail;
 
 
     opens com.client.pop3imap4client to javafx.fxml;

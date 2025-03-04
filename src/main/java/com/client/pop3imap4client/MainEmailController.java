@@ -1,19 +1,27 @@
 package com.client.pop3imap4client;
 
 import clientHandling.FatherEmail;
+import clientHandling.POPCommands;
 import data.DataHolder;
 import data.Email;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.List;
 
 public class MainEmailController {
@@ -60,6 +68,12 @@ public class MainEmailController {
     @FXML
     private TableColumn<Email, String> subjectColumn;
 
+    @FXML
+    private TableColumn<Email, String> typeColumn;
+
+    @FXML
+    private TableColumn<Email, String> companyColumn;
+
     FatherEmail chosenClient;
 
     private ObservableList<Email> emailList = FXCollections.observableArrayList();
@@ -70,6 +84,8 @@ public class MainEmailController {
         this.chosenClient = client;
 
         idColumn.setCellValueFactory(cellData -> cellData.getValue().idProperty().asObject());
+        companyColumn.setCellValueFactory(cellDate -> cellDate.getValue().companyProperty());
+        typeColumn.setCellValueFactory(cellDate -> cellDate.getValue().typeProperty());
         senderColumn.setCellValueFactory(cellData -> cellData.getValue().senderProperty());
         subjectColumn.setCellValueFactory(cellData -> cellData.getValue().subjectProperty());
         sizeColumn.setCellValueFactory(cellData -> cellData.getValue().sizeProperty());
@@ -82,6 +98,12 @@ public class MainEmailController {
         exitButton.setOnAction(this::handleExit);
         deleteButton.setOnAction(this::handleDelete);
 
+        folderList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue != null){
+                showFolderEmails(newValue);
+            }
+        });
+
 
         //bind
         emailTable.setItems(emailList);
@@ -89,23 +111,30 @@ public class MainEmailController {
         emailTable.getSelectionModel().selectedItemProperty().addListener((obs, oldEmail, newEmail) -> {
             if (newEmail != null) {
                 showEmailDetails(newEmail);
+                deleteButton.setDisable(true);
+            }else{
+                deleteButton.setDisable(false);
             }
         });
-
         loadInbox();
+    }
+
+    private void showFolderEmails(String newValue) {
+
     }
 
 
     private void loadInbox() {
-        emailList.clear();
-        List<Email> messages = chosenClient.fetchEmails();
-        emailList.addAll(messages);
+        new Thread(() -> {
+            chosenClient.fetchEmails(emailList);
+
+        }).start();
     }
 
     private void showEmailDetails(Email email) {
         String fullMessage = chosenClient.retrieveEmail(email.getId());
         selectedEmailPreview.setText(fullMessage);
-        previewEmailSender.setText("From: " + email.getSender());
+        previewEmailSender.setText(email.getSender());
     }
 
 
@@ -129,5 +158,17 @@ public class MainEmailController {
 
     private void handleBack(ActionEvent actionEvent){
         //log out client
+        try {
+            chosenClient.logOut();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("connectionScreen.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
