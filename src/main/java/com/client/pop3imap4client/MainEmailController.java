@@ -4,6 +4,7 @@ import clientHandling.FatherEmail;
 import clientHandling.POPCommands;
 import data.DataHolder;
 import data.Email;
+import data.Folder;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -13,12 +14,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -39,7 +35,10 @@ public class MainEmailController {
     private Button exitButton;
 
     @FXML
-    private ListView<String> folderList;
+    private Button undoDeletionsButton;
+
+    @FXML
+    private ListView<Folder> folderList;
 
     @FXML
     private TableColumn<Email, Integer> idColumn;
@@ -78,6 +77,9 @@ public class MainEmailController {
 
     private ObservableList<Email> emailList = FXCollections.observableArrayList();
 
+
+    private ObservableList<Folder> folders = FXCollections.observableArrayList();
+
 //TODO need to handle folder list
 
     public void initialize(FatherEmail client) {
@@ -94,45 +96,66 @@ public class MainEmailController {
         selectedProtocol.setText(DataHolder.getInstance().getSelectedProtocol());
 
         refreshButton.setOnAction(this::handleRefresh);
+        undoDeletionsButton.setOnAction(this::handleUndoDeletions);
         backButton.setOnAction(this::handleBack);
         exitButton.setOnAction(this::handleExit);
         deleteButton.setOnAction(this::handleDelete);
 
-        folderList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if(newValue != null){
-                showFolderEmails(newValue);
+        folderList.setCellFactory(lv -> new javafx.scene.control.ListCell<Folder>() {
+            @Override
+            protected void updateItem(Folder folder, boolean empty) {
+                super.updateItem(folder, empty);
+                setText(empty || folder == null ? null : folder.getFolderName());
+            }
+        });
+
+        folderList.getSelectionModel().selectedItemProperty().addListener((observable, oldFolder, newFolder) -> {
+            if (newFolder != null) {
+                showFolderEmails(newFolder);
             }
         });
 
 
+
         //bind
         emailTable.setItems(emailList);
+        folderList.setItems(folders);
+
+        loadFolders();
+
+        folderList.getSelectionModel().selectFirst();
+
 
         emailTable.getSelectionModel().selectedItemProperty().addListener((obs, oldEmail, newEmail) -> {
             if (newEmail != null) {
                 showEmailDetails(newEmail);
-                deleteButton.setDisable(true);
-            }else{
                 deleteButton.setDisable(false);
+            }else{
+                deleteButton.setDisable(true);
             }
         });
         loadInbox();
     }
 
-    private void showFolderEmails(String newValue) {
-
+    private void handleUndoDeletions(ActionEvent actionEvent) {
+        chosenClient.resetSession();
     }
+
+    private void showFolderEmails(Folder folder) {
+        emailList.setAll(folder.getFolderEmails());
+    }
+
 
 
     private void loadInbox() {
-        new Thread(() -> {
-            chosenClient.fetchEmails(emailList);
+            new Thread(() -> {
+                chosenClient.fetchEmails(emailList);
 
-        }).start();
+            }).start();
     }
 
     private void showEmailDetails(Email email) {
-        String fullMessage = chosenClient.retrieveEmail(email.getId());
+        String fullMessage = email.getContent();
         selectedEmailPreview.setText(fullMessage);
         previewEmailSender.setText(email.getSender());
     }
@@ -142,7 +165,7 @@ public class MainEmailController {
         Email selectedEmail = emailTable.getSelectionModel().getSelectedItem();
         if (selectedEmail != null) {
             chosenClient.deleteEmail(selectedEmail.getId());
-            loadInbox();
+            emailList.remove(selectedEmail);
         }
     }
 
@@ -152,7 +175,9 @@ public class MainEmailController {
     }
 
     private void handleExit(ActionEvent actionEvent) {
+        chosenClient.logOut();
         chosenClient.close();
+
         System.exit(0);
     }
 
@@ -171,4 +196,10 @@ public class MainEmailController {
             throw new RuntimeException(e);
         }
     }
+
+    private void loadFolders() {
+        folders.setAll(chosenClient.getFolders());
+    }
+
+
 }

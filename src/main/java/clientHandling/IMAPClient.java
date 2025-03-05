@@ -1,6 +1,7 @@
 package clientHandling;
 
 import data.Email;
+import data.Folder;
 import javafx.collections.ObservableList;
 
 import java.util.List;
@@ -35,5 +36,15 @@ public class IMAPClient extends FatherEmail {
     @Override
     public void logOut() {
 
+    }
+
+    @Override
+    public void displayFolder(String folderName, ObservableList<Email> emailList) {
+
+    }
+
+    @Override
+    public List<Folder> getFolders() {
+        return List.of();
     }
 }

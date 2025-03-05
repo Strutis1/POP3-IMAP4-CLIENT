@@ -6,6 +6,7 @@ public class DataHolder {
     private String selectedProtocol;
     private String hostName;
     private int securePort;
+    private String currentUser;
     private static final DataHolder INSTANCE = new DataHolder();
 
 
@@ -47,4 +48,11 @@ public class DataHolder {
         this.securePort = securePort;
     }
 
+    public void setCurrentUser(String email) {
+        this.currentUser = email;
+    }
+
+    public String getCurrentUser() {
+        return currentUser;
+    }
 }

@@ -1,24 +1,33 @@
 package clientHandling;
 
+import data.DataHolder;
 import data.Email;
 
+import data.Folder;
 import jakarta.mail.internet.MimeUtility;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
-import javafx.scene.control.TableView;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.codec.net.QuotedPrintableCodec;
+
 
 public class POP3Client extends FatherEmail {
+
 
     public POP3Client(String host, int port) {
         super(host, port);
         connect();
+        this.folders = new ArrayList<>();
+        folders.add(new Folder("Inbox"));
     }
 
     @Override
@@ -26,6 +35,7 @@ public class POP3Client extends FatherEmail {
         try {
             String responseUser = sendCommand(POPCommands.USER + " " + email);
             if (!responseUser.startsWith("+OK")) {
+                DataHolder.getInstance().setCurrentUser(email);
                 return false;
             }
             String responsePass = sendCommand(POPCommands.PASS + " " + appPassword);
@@ -43,7 +53,7 @@ public class POP3Client extends FatherEmail {
 
     @Override
     public void deleteEmail(int id) {
-
+        sendCommand(POPCommands.DELE + " " + id);
     }
 
     @Override
@@ -65,7 +75,9 @@ public class POP3Client extends FatherEmail {
                 }
             }
 
-            Platform.runLater(emailList::clear);
+            Folder inbox = getInboxFolder();
+            if (inbox == null) return;
+
 
             for (int i = 0; i < messageIds.size(); i++) {
                 int messageId = messageIds.get(i);
@@ -78,12 +90,17 @@ public class POP3Client extends FatherEmail {
                 String type = "Unknown type";
                 String subject = "No Subject";
                 String company = "No company";
+                String content = "No content";
                 String helper;
 
                 boolean readingSubject = false;
 
                 boolean isHeader = true;
-                while (!(line = reader.readLine()).equals(".")) {
+
+                StringBuilder rawEmail = new StringBuilder();
+
+                while ((line = reader.readLine()) != null && !line.equals(".")) {
+                    rawEmail.append(line).append("\r\n");
                     if (isHeader) {
                         if (line.startsWith("From:")) {
                             // gali buti formatas ""Company" <type+sender>" so we get those values
@@ -119,33 +136,104 @@ public class POP3Client extends FatherEmail {
                     }
                 }
 
-                try {
-                    if(company.startsWith("=?UTF-8?"))
-                        company = MimeUtility.decodeText(company);
-                    if(sender.startsWith("=?UTF-8?"))
-                        sender = MimeUtility.decodeText(sender);
+                content = extractEmailBody(rawEmail.toString());
 
-                    if(subject.startsWith("=?UTF-8?"))
-                        subject = MimeUtility.decodeText(subject);
+
+                try {
+                    if(company.startsWith("=?UTF-8?") || company.startsWith("=?utf-8?"))
+                        company = MimeUtility.decodeText(company);
+                    if(sender.startsWith("=?UTF-8?") || sender.startsWith("=?utf-8?"))
+                        sender = MimeUtility.decodeText(sender);
+                    subject = MimeUtility.decodeText(subject);
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
 
-                Email email = new Email(messageId, company, sender, type, subject, messageSize + " bytes");
 
-                Platform.runLater(() -> {
-                    emailList.add(email);
-                });
+
+                Email email = new Email(messageId, company, sender, type, subject, messageSize + " bytes", content);
+
+                boolean exists = emailList.stream().anyMatch(e -> e.getId() == email.getId());
+                if (!exists) {
+                    Platform.runLater(() -> emailList.add(email));
+                }
+
 
             }
+            Platform.runLater(() -> inbox.updateEmails(new ArrayList<>(emailList)));
+
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+
+    private String extractEmailBody(String rawEmail) {
+
+        Pattern base64Pattern = Pattern.compile("Content-Transfer-Encoding:\\s*base64\\s*\\n([A-Za-z0-9+/=\\s]+)", Pattern.DOTALL);
+        Matcher base64Matcher = base64Pattern.matcher(rawEmail);
+
+        Pattern quotedPrintablePattern = Pattern.compile("Content-Transfer-Encoding:\\s*quoted-printable\\s*\\n(.*?)\\n--", Pattern.DOTALL);
+        Matcher quotedPrintableMatcher = quotedPrintablePattern.matcher(rawEmail);
+
+        Pattern plainTextPattern = Pattern.compile("Content-Type:\\s*text/plain(?:;.*?)?\\s*(?:.*\\n)*?\\n([\\s\\S]+?)(?=\\n--|$)", Pattern.DOTALL);
+
+        Matcher plainTextMatcher = plainTextPattern.matcher(rawEmail);
+
+        String body = "No content";
+
+        try {
+            if (base64Matcher.find()) {
+                body = decodeBase64(base64Matcher.group(1));
+            } else if (quotedPrintableMatcher.find()) {
+                QuotedPrintableCodec codec = new QuotedPrintableCodec();
+                body = codec.decode(quotedPrintableMatcher.group(1));
+            } else if (plainTextMatcher.find()) {
+                body = MimeUtility.decodeText(plainTextMatcher.group(1));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return body;
+    }
+
+
+    private String decodeBase64(String encodedText) {
+        try {
+            encodedText = encodedText.replaceAll("\\s+", ""); // Remove spaces
+            byte[] decodedBytes = Base64.getMimeDecoder().decode(encodedText);
+            return new String(decodedBytes, StandardCharsets.UTF_8); // Decode as UTF-8
+        } catch (Exception e) {
+            return "Base64 Decoding Failed";
+        }
+    }
+
+
+    //the only folder managed by pop3 protocol
+    public Folder getInboxFolder() {
+        return folders.stream()
+                .filter(f -> f.getFolderName().equalsIgnoreCase("Inbox"))
+                .findFirst()
+                .orElse(null);
+    }
+
     @Override
     public void logOut() {
         sendCommand(POPCommands.QUIT);
+        System.out.println("Logged out of " + DataHolder.getInstance().getCurrentUser());
+    }
+
+    @Override
+    public void displayFolder(String folderName, ObservableList<Email> emailList) {
+        if (!emailList.equals(getInboxFolder().getFolderEmails())) {
+            emailList.setAll(getInboxFolder().getFolderEmails());
+        }
+    }
+
+    @Override
+    public List<Folder> getFolders() {
+        return List.of(new Folder("Inbox"));
     }
 
 }

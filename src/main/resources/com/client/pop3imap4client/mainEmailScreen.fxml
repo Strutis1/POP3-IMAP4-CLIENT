@@ -34,7 +34,7 @@
     </BorderPane>
    <VBox layoutY="87.2" prefHeight="663.0" prefWidth="140.0" AnchorPane.bottomAnchor="50.0" AnchorPane.topAnchor="87.0">
       <children>
-         <ListView fx:id="folderList" prefHeight="600.0" prefWidth="140.0" style="-fx-background-color: gray;" />
+         <ListView fx:id="folderList" prefHeight="600.0" prefWidth="140.0" style="-fx-background-color: gray; -fx-fixed-cell-size: 70px;" />
          <Button fx:id="refreshButton" mnemonicParsing="false" prefHeight="50.0" prefWidth="280.0" style="-fx-background-color: gray; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 20;" text="REFRESH">
             <VBox.margin>
                <Insets top="15.0" />
@@ -61,14 +61,19 @@
                </Label>
             </children>
          </HBox>
-         <TextArea fx:id="selectedEmailPreview" editable="false" prefHeight="570.0" prefWidth="280.0" wrapText="true" />
-         <Button fx:id="deleteButton" disable="true" mnemonicParsing="false" prefHeight="50.0" prefWidth="280.0" style="-fx-background-color: gray; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 20;" text="DELETE">
+         <TextArea fx:id="selectedEmailPreview" editable="false" prefHeight="521.0" prefWidth="280.0" wrapText="true" />
+         <Button fx:id="undoDeletionsButton" mnemonicParsing="false" prefHeight="50.0" prefWidth="280.0" style="-fx-background-color: gray; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 20;" text="UNDO DELETIONS">
             <font>
                <Font name="Constantia" size="12.0" />
             </font>
             <VBox.margin>
                <Insets top="15.0" />
             </VBox.margin>
+         </Button>
+         <Button fx:id="deleteButton" disable="true" mnemonicParsing="false" prefHeight="50.0" prefWidth="280.0" style="-fx-background-color: gray; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 20;" text="MARK FOR DELETION">
+            <font>
+               <Font name="Constantia" size="12.0" />
+            </font>
          </Button>
       </children>
    </VBox>

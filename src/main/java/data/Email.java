@@ -10,13 +10,16 @@ public class Email {
     private final StringProperty subject;
     private final StringProperty size;
 
-    public Email(int id,String company, String sender, String type, String subject, String size) {
+    private final String content;
+
+    public Email(int id,String company, String sender, String type, String subject, String size, String content) {
         this.id = new SimpleIntegerProperty(id);
         this.company = new SimpleStringProperty(company);
         this.sender = new SimpleStringProperty(sender);
         this.type = new SimpleStringProperty(type);
         this.subject = new SimpleStringProperty(subject);
         this.size = new SimpleStringProperty(size);
+        this.content = content;
     }
 
     public int getId() {
@@ -39,6 +42,10 @@ public class Email {
 
     public String getSize() {
         return size.get();
+    }
+
+    public String getContent() {
+        return content;
     }
 
     public IntegerProperty idProperty() {

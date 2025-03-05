@@ -79,13 +79,13 @@ public class ConnectionController {
             System.out.println("Reusing existing connection to " + currentHost);
         } else {
             if (chosenClient != null) {
-                chosenClient.close();  // Close the previous connection if switching provider
+                chosenClient.close();
             }
             chosenClient = (selectedProtocol.getText().equals("POP3"))
                     ? new POP3Client(newHost, DataHolder.getInstance().getSecurePort())
                     : new IMAPClient(newHost, DataHolder.getInstance().getSecurePort());
 
-            currentHost = newHost;  // Update stored host
+            currentHost = newHost;
         }
 
     }
@@ -114,6 +114,7 @@ public class ConnectionController {
             errorText.setVisible(false);
             if(chosenClient.authenticate(emailText.getText(), appPassword.getText())) {
                 System.out.println("Credentials accepted");
+                DataHolder.getInstance().setCurrentUser(emailText.getText());
                 connectClient(actionEvent);
             }
 
@@ -150,7 +151,7 @@ public class ConnectionController {
 
     private void handleBack(ActionEvent actionEvent) {
         try {
-            chosenClient.logOut();
+            chosenClient.close();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("serverChoice.fxml"));
             Parent root = loader.load();
 

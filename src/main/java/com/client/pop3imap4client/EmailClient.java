@@ -9,7 +9,11 @@ import javafx.stage.StageStyle;
 import java.io.IOException;
 
 //TODO inform what gmail is disconnecting
+//TODO fix disconnecting problem stream closed when exiting
 //TODO fix tableview insufficient viewing problem
+//TODO when doing imap i need to rewrite the refresh function to work for the current selected folder
+//TODO add a search bar for emails
+//TODO add email saving on file and be able to open and read emails idek
 
 public class EmailClient extends Application {
     @Override
