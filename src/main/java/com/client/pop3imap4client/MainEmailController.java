@@ -145,12 +145,11 @@ public class MainEmailController {
         emailList.setAll(folder.getFolderEmails());
     }
 
-
-
     private void loadInbox() {
             new Thread(() -> {
-                chosenClient.fetchEmails(emailList);
-
+                if(folderList.getSelectionModel().getSelectedItem() != null) {
+                    chosenClient.fetchEmails(folderList.getSelectionModel().getSelectedItem(), emailList);
+                }
             }).start();
     }
 

@@ -10,14 +10,10 @@ import javafx.collections.ObservableList;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.apache.commons.codec.net.QuotedPrintableCodec;
 
 
 public class POP3Client extends FatherEmail {
@@ -35,14 +31,36 @@ public class POP3Client extends FatherEmail {
         try {
             String responseUser = sendCommand(POPCommands.USER + " " + email);
             if (!responseUser.startsWith("+OK")) {
-                DataHolder.getInstance().setCurrentUser(email);
                 return false;
             }
             String responsePass = sendCommand(POPCommands.PASS + " " + appPassword);
-            return responsePass.startsWith("+OK");
+            if(responsePass.startsWith("+OK") && responseUser.startsWith("+OK")) {
+                DataHolder.getInstance().setCurrentUser(email);
+                return true;
+            }else{
+                return false;
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return false;
+        }
+    }
+
+    @Override
+    protected String sendCommand(String command) throws IOException {
+        try {
+            writer.write(command + "\r\n");
+            writer.flush();
+
+            String response;
+            StringBuilder fullResponse = new StringBuilder();
+            while ((response = reader.readLine()) != null) {
+                fullResponse.append(response).append("\n");
+                if (response.startsWith("+OK") || response.startsWith("-ERR") || response.startsWith("+ ")) break; // Stop reading for known responses
+            }
+            return fullResponse.toString();
+        } catch (IOException e) {
+            return "Error sending command: " + e.getMessage();
         }
     }
 
@@ -53,11 +71,15 @@ public class POP3Client extends FatherEmail {
 
     @Override
     public void deleteEmail(int id) {
-        sendCommand(POPCommands.DELE + " " + id);
+        try {
+            sendCommand(POPCommands.DELE + " " + id);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public void fetchEmails(ObservableList<Email> emailList) {
+    public void fetchEmails(Folder folder, ObservableList<Email> emailList) {
         try {
             sendCommand(POPCommands.LIST);
             String line;
@@ -101,38 +123,32 @@ public class POP3Client extends FatherEmail {
 
                 while ((line = reader.readLine()) != null && !line.equals(".")) {
                     rawEmail.append(line).append("\r\n");
-                    if (isHeader) {
-                        if (line.startsWith("From:")) {
-                            // gali buti formatas ""Company" <type+sender>" so we get those values
-                            helper = line.substring(5).trim();
-                            System.out.println("Extracted From line: " + helper);
-                            Pattern patternWithType = Pattern.compile("\"(.*?)\"\\s*<([^+]+)\\+([^>]+)>");
-                            Matcher matcherWithType = patternWithType.matcher(helper);
+                    if (line.startsWith("From:")) {
+                        // gali buti formatas ""Company" <type+sender>" so we get those values
+                        helper = line.substring(5).trim();
+                        System.out.println("Extracted From line: " + helper);
+                        Pattern patternWithType = Pattern.compile("\"(.*?)\"\\s*<([^+]+)\\+([^>]+)>");
+                        Matcher matcherWithType = patternWithType.matcher(helper);
 
-                            // gali buti formatas ""Company" <sender>" so we get those values
-                            Pattern patternWithoutType = Pattern.compile("(?:\"(.*?)\"|([^<]+))\\s*<([^>]+)>");
-                            Matcher matcherWithoutType = patternWithoutType.matcher(helper);
+                        // gali buti formatas ""Company" <sender>" so we get those values
+                        Pattern patternWithoutType = Pattern.compile("(?:\"(.*?)\"|([^<]+))\\s*<([^>]+)>");
+                        Matcher matcherWithoutType = patternWithoutType.matcher(helper);
 
-                            if (matcherWithType.find()) {
-                                company = matcherWithType.group(1);
-                                type = matcherWithType.group(2);
-                                sender = matcherWithType.group(3);
-                            } else if (matcherWithoutType.find()) {
-                                company = matcherWithoutType.group(1) != null ? matcherWithoutType.group(1) : matcherWithoutType.group(2);
-                                sender = matcherWithoutType.group(3);
-                            }
-                        } else if (line.startsWith("Subject:")) {
-                            subject = line.substring(8).trim();
-                            readingSubject = true;
+                        if (matcherWithType.find()) {
+                            company = matcherWithType.group(1);
+                            type = matcherWithType.group(2);
+                            sender = matcherWithType.group(3);
+                        } else if (matcherWithoutType.find()) {
+                            company = matcherWithoutType.group(1) != null ? matcherWithoutType.group(1) : matcherWithoutType.group(2);
+                            sender = matcherWithoutType.group(3);
                         }
-                        else if (readingSubject && (line.startsWith(" ") || line.startsWith("\t"))) {
-                            subject += " " + line.trim();
-                        }
-                        else if (!line.isEmpty()) {
-                            readingSubject = false;
-                        }
-                    } else if (line.isEmpty()) {
-                            isHeader = false;
+                    } else if (line.startsWith("Subject:")) {
+                        subject = line.substring(8).trim();
+                        readingSubject = true;
+                    } else if (readingSubject && (line.startsWith(" ") || line.startsWith("\t"))) {
+                        subject += " " + line.trim();
+                    } else if (!line.isEmpty()) {
+                        readingSubject = false;
                     }
                 }
 
@@ -167,45 +183,12 @@ public class POP3Client extends FatherEmail {
         }
     }
 
-
-    private String extractEmailBody(String rawEmail) {
-
-        Pattern base64Pattern = Pattern.compile("Content-Transfer-Encoding:\\s*base64\\s*\\n([A-Za-z0-9+/=\\s]+)", Pattern.DOTALL);
-        Matcher base64Matcher = base64Pattern.matcher(rawEmail);
-
-        Pattern quotedPrintablePattern = Pattern.compile("Content-Transfer-Encoding:\\s*quoted-printable\\s*\\n(.*?)\\n--", Pattern.DOTALL);
-        Matcher quotedPrintableMatcher = quotedPrintablePattern.matcher(rawEmail);
-
-        Pattern plainTextPattern = Pattern.compile("Content-Type:\\s*text/plain(?:;.*?)?\\s*(?:.*\\n)*?\\n([\\s\\S]+?)(?=\\n--|$)", Pattern.DOTALL);
-
-        Matcher plainTextMatcher = plainTextPattern.matcher(rawEmail);
-
-        String body = "No content";
-
+    @Override
+    public void resetSession() {
         try {
-            if (base64Matcher.find()) {
-                body = decodeBase64(base64Matcher.group(1));
-            } else if (quotedPrintableMatcher.find()) {
-                QuotedPrintableCodec codec = new QuotedPrintableCodec();
-                body = codec.decode(quotedPrintableMatcher.group(1));
-            } else if (plainTextMatcher.find()) {
-                body = MimeUtility.decodeText(plainTextMatcher.group(1));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return body;
-    }
-
-
-    private String decodeBase64(String encodedText) {
-        try {
-            encodedText = encodedText.replaceAll("\\s+", ""); // Remove spaces
-            byte[] decodedBytes = Base64.getMimeDecoder().decode(encodedText);
-            return new String(decodedBytes, StandardCharsets.UTF_8); // Decode as UTF-8
-        } catch (Exception e) {
-            return "Base64 Decoding Failed";
+            sendCommand(POPCommands.RSET);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -220,7 +203,11 @@ public class POP3Client extends FatherEmail {
 
     @Override
     public void logOut() {
-        sendCommand(POPCommands.QUIT);
+        try {
+            sendCommand(POPCommands.QUIT);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         System.out.println("Logged out of " + DataHolder.getInstance().getCurrentUser());
     }
 
@@ -230,10 +217,4 @@ public class POP3Client extends FatherEmail {
             emailList.setAll(getInboxFolder().getFolderEmails());
         }
     }
-
-    @Override
-    public List<Folder> getFolders() {
-        return List.of(new Folder("Inbox"));
-    }
-
 }
